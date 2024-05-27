@@ -2,11 +2,17 @@ package com.example.slutprojekt
 
 import android.graphics.RectF
 
-//antagligen inte nödvändig
 data class ObstacleList (
     val list: MutableList<ObstacleState>,
-    val start: Float,
-)
+    var start: Float,
+) {
+    fun updatePosition(birdHeight: Float) {
+        start+=birdHeight
+        for (obstacle in list){
+            obstacle.position.offset(0f, birdHeight)
+        }
+    }
+}
 
 data class ObstacleState (
     val position: RectF,

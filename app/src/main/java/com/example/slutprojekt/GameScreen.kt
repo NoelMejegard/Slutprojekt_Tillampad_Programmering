@@ -34,11 +34,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun GameScreen(
-    viewModel: GameState.GameViewModel = viewModel()
+    viewModel: GameState.GameViewModel = viewModel(),
+    dificulty: Int
 ){
+
     val gameState by viewModel.gameState.collectAsState()
     var gameUnitToDp by remember { mutableStateOf(0.dp) }
     var screenWidthGameUnits by remember { mutableStateOf(0f) }
+    viewModel.setDificulty(dificulty)
     LaunchedEffect(Unit) {
         while (true) {
             withFrameMillis {
@@ -48,14 +51,13 @@ fun GameScreen(
     }
     Column(
         modifier = Modifier
-            .background(color = Color.Yellow)
             .clickable { viewModel.onTap() }
     ) {
         val localDensity = LocalDensity.current
         Box(modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .fillMaxWidth()
-            .fillMaxHeight(0.8f)
+            .fillMaxHeight()
             .onGloballyPositioned { coordinates ->
                 with(localDensity) {
                     gameUnitToDp = coordinates.size.height.toDp() / GameScreenHeight
@@ -66,45 +68,39 @@ fun GameScreen(
             Background(Modifier.fillMaxSize())
 
             Text(
-                gameState.distance().toInt().toString(),
+                gameState.points().toString(),
                 Modifier
                     .align(Alignment.TopCenter)
-                    .zIndex(1f), // Draw on top of everything
+                    .zIndex(1f),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
             )
 
             Text(
-                "Tap to restart",
+                gameState.restartText(),
                 Modifier
                     .align(Alignment.Center)
-                    .zIndex(1f), // Draw on top of everything
+                    .zIndex(1f),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
             )
             val viewPortStart = gameState.distance() - ViewPortOffset
             Bird(state = gameState.birdState, viewPortStart, gameUnitToDp)
             for (obstacleList in gameState.obstacles) {
-                // don't bother trying to draw anything which is offscreen
-                //Kan behöva kollas på när det kommer till hur hinderna rör sig
-                if (obstacleList.start < 0) {
+                if (obstacleList.start < 0f) {
                     break
                 }
-                for (obstacle in obstacleList.list)
-
-                    // Lista ut varför hinderna inte vill bli utskrivna
+                for (obstacle in obstacleList.list) {
+                    if (obstacle.position.left > (screenWidthGameUnits + viewPortStart)) {
+                        break
+                    }
                     Obstacle(obstacle, viewPortStart, gameUnitToDp)
-                //Obstacle(obstaclePair.bottom, viewPortStart, gameUnitToDp, false)
+                }
             }
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .fillMaxWidth()
-        ) {
-            Ground()
-        }
+
     }
+
 }
 
 
@@ -117,17 +113,5 @@ fun Background(modifier: Modifier = Modifier) {
             contentDescription = null,
             modifier = modifier.fillMaxSize()
         )
-    }
-}
-
-@Composable
-fun Ground(
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier
-    ) {
-        // Divider between background and foreground
-
     }
 }

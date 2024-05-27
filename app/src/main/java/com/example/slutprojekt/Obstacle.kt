@@ -15,15 +15,9 @@ fun Obstacle(
     state: ObstacleState,
     viewPortStart: Float,
     gameUnitToDp: Dp,
-    //isUp: Boolean,
     modifier: Modifier = Modifier
 
 ) {
-    var rotationDegrees=0f
-    /*if (isUp){
-        rotationDegrees=180f
-    }*/
-    println("hej")
     Image(
         painter = painterResource(id = R.drawable.cloud),
         contentScale = ContentScale.FillBounds,
@@ -34,6 +28,6 @@ fun Obstacle(
                 gameUnitToDp * (state.position.left-viewPortStart),
                 gameUnitToDp * (state.position.top),
             )
-            .rotate(rotationDegrees)
+
     )
 }

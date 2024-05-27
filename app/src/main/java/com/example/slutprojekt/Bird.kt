@@ -17,15 +17,6 @@ fun Bird(
     gameUnitToDp: Dp,
     modifier: Modifier = Modifier,
 ) {
-    //inte nödvändigt
-    val rotateDegrees =
-        when (state.action) {
-            BirdAction.IDLE -> 0f
-            BirdAction.FLAPPING -> LiftingDegree
-            BirdAction.DEAD -> DeadDegree
-            BirdAction.FALLING -> FallingDegree
-            BirdAction.FAST_FALLING -> FastFalling
-        }
     Image(
         painter = painterResource(id = R.drawable.bird),
         contentScale = ContentScale.FillBounds,
@@ -37,12 +28,5 @@ fun Bird(
                 gameUnitToDp * (state.position.left-viewPortStart),
                 gameUnitToDp * (state.position.top),
             )
-            .rotate(rotateDegrees)
     )
 }
-
-//behöver inga degrees
-const val LiftingDegree = -10f
-const val FallingDegree = -LiftingDegree
-const val FastFalling = 60f
-const val DeadDegree = FastFalling - 10f
